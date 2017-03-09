@@ -6,6 +6,7 @@ import com.ipn.support.CursoImpl;
 import com.ipn.vo.Alumno;
 import com.ipn.vo.Asignacion;
 import com.ipn.vo.Curso;
+import com.ipn.vo.CursoAlumno;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
@@ -23,7 +24,7 @@ import java.util.logging.Logger;
  * @author Alex
  */
 public class Server extends Thread {
- 
+
     public static final int PORT = 6666;
     public static final int INIT = 0;
     public static final int ALUMNO = 1;
@@ -34,6 +35,7 @@ public class Server extends Thread {
     public static final int FIND = 6;
     public static final int REMOVE = 7;
     public static final int FIND_ALL = 8;
+    public static final int FIND_ALL_CUSTOM = 9;
     private ServerSocket socket;
     protected ObjectInputStream entrada;
     protected ObjectOutputStream salida;
@@ -41,7 +43,7 @@ public class Server extends Thread {
     private AsignacionImpl daoAsignacion;
     private CursoImpl daocurso;
     private Socket client = null;
- 
+
     public Server() {
         try {
             Properties p = new Properties();
@@ -52,32 +54,29 @@ public class Server extends Thread {
             daoAsignacion = new AsignacionImpl(p);
             daocurso = new CursoImpl(p);
         } catch (ClassNotFoundException | SQLException ex) {
-                System.out.println(ex.getMessage());
-                System.out.println(ex.getClass());
-                System.out.println(ex.getCause());
+            System.out.println(ex.getMessage());
+            System.out.println(ex.getClass());
+            System.out.println(ex.getCause());
         }
         try {
             this.socket = new ServerSocket(PORT);
             System.out.println("Funcionando");
-            
-                 
-                 start();
-          
-           
+
+            start();
+
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
             System.out.println(ex.getClass());
             System.out.println(ex.getCause());
 //            ex.printStackTrace();
         }
-        
+
     }
 
     public ServerSocket getSocket() {
         return socket;
     }
-    
-    
+
     @Override
     public void run() {
         while (true) {
@@ -102,8 +101,8 @@ public class Server extends Thread {
             }
         }
     }
-    
-    private void operation(int type) throws IOException, ClassNotFoundException{
+
+    private void operation(int type) throws IOException, ClassNotFoundException {
         int op = entrada.readInt();
         Object input = null;
         switch (op) {
@@ -165,18 +164,22 @@ public class Server extends Thread {
                 }
                 break;
             case FIND:
-                int id = entrada.readInt();
+                int id ;//= entrada.readInt();
                 switch (type) {
                     case ALUMNO:
+                        id = entrada.readInt();
                         Alumno alumno = this.daoAlumno.find(id);
                         salida.writeObject(alumno);
                         break;
                     case CURSO:
-                        Curso curso =  this.daocurso.find(id);
+                        id = entrada.readInt();
+                        Curso curso = this.daocurso.find(id);
                         salida.writeObject(curso);
                         break;
                     case ASIGNACION:
-                        Asignacion asig =  this.daoAsignacion.find(id);
+                        id = entrada.readInt();
+                        int id_c = entrada.readInt();
+                        Asignacion asig = this.daoAsignacion.find(id,id_c);
                         salida.writeObject(asig);
                         break;
                 }
@@ -186,27 +189,33 @@ public class Server extends Thread {
                     case ALUMNO:
                         List<Alumno> aux = this.daoAlumno.findAll();
                         salida.writeInt(aux.size());
-                        for(Alumno a : aux){
+                        for (Alumno a : aux) {
                             salida.writeObject(a);
                         }
                         break;
                     case CURSO:
                         List<Curso> aux_curso = this.daocurso.findAll();
                         salida.writeInt(aux_curso.size());
-                        for(Curso a : aux_curso){
+                        for (Curso a : aux_curso) {
                             salida.writeObject(a);
                         }
                         break;
                     case ASIGNACION:
                         List<Asignacion> aux_asig = this.daoAsignacion.findAll();
                         salida.writeInt(aux_asig.size());
-                        for(Asignacion a : aux_asig){
+                        for (Asignacion a : aux_asig) {
                             salida.writeObject(a);
                         }
                         break;
                 }
                 break;
-
+            case FIND_ALL_CUSTOM:
+                List<CursoAlumno> aux_calumno = this.daoAsignacion.getListCursoAlumno();
+                salida.writeInt(aux_calumno.size());
+                for (CursoAlumno a : aux_calumno) {
+                    salida.writeObject(a);
+                }
+                break;
         }
     }
     public static void main(String[] args) {

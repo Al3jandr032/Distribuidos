@@ -3,12 +3,15 @@ package com.ipn.client;
 import com.ipn.server.Server;
 import com.ipn.vo.Alumno;
 import com.ipn.vo.Asignacion;
+import com.ipn.vo.AsignacionPK;
 import com.ipn.vo.Curso;
+import com.ipn.vo.CursoAlumno;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
@@ -27,7 +30,7 @@ public class main extends javax.swing.JFrame {
         model = new DefaultTableModel(new String[]{"id","nombre","apellidos","email"},0);
         initComponents();
         this.jTable1.setModel(model);
-        
+        cursoalumno = new HashMap<>();
     }
 
     /**
@@ -63,7 +66,6 @@ public class main extends javax.swing.JFrame {
         AlumnoEditarMenu = new javax.swing.JMenuItem();
         CursoEditarMenu = new javax.swing.JMenuItem();
         AsignacionEditarMenu = new javax.swing.JMenuItem();
-        borrarMenu = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
         cutMenuItem = new javax.swing.JMenuItem();
         copyMenuItem = new javax.swing.JMenuItem();
@@ -182,10 +184,6 @@ public class main extends javax.swing.JFrame {
             }
         });
         editarJmenu.add(AsignacionEditarMenu);
-
-        borrarMenu.setText("Borrar Actual");
-        borrarMenu.setEnabled(false);
-        editarJmenu.add(borrarMenu);
 
         menuBar.add(editarJmenu);
 
@@ -399,15 +397,16 @@ public class main extends javax.swing.JFrame {
             ObjectInputStream is = new ObjectInputStream(socket.getInputStream());
 
             dos.writeInt(Server.ASIGNACION);
-            dos.writeInt(Server.FIND_ALL);
+            dos.writeInt(Server.FIND_ALL_CUSTOM);
             dos.flush();
             int index = is.readInt();
 //            ArrayList<Object> lst = new ArrayList();
-            model = new DefaultTableModel(new String[]{"id_alumno","id_curso","horario","tipo"},0);
+            model = new DefaultTableModel(new String[]{"alumno","curso"},0);
             this.jTable1.setModel(model);
             for (int i = 0; i < index; i++) {
-                Asignacion o = (Asignacion) is.readObject();
-                model.addRow(new Object[]{"","","",""});
+                CursoAlumno o = (CursoAlumno) is.readObject();
+                model.addRow(new Object[]{o.getNombreAlumno(),o.getNombreCurso()});
+                cursoalumno.put(o.getNombreAlumno()+o.getNombreCurso(),o);
             }
 
             dos.close();
@@ -419,7 +418,7 @@ public class main extends javax.swing.JFrame {
             Logger.getLogger(main.class.getName()).log(Level.SEVERE, null, ex);
         }finally{
             if(model.getRowCount() > 0){
-                this.CursoEditarMenu.setEnabled(true);
+                this.AsignacionEditarMenu.setEnabled(true);
             }
         }
     }//GEN-LAST:event_asignacionListarActionPerformed
@@ -515,9 +514,52 @@ public class main extends javax.swing.JFrame {
     }//GEN-LAST:event_asigancionCrearMenuActionPerformed
 
     private void AsignacionEditarMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AsignacionEditarMenuActionPerformed
-        rform = new Relationform(2);
-        System.out.println("Editar");
-        rform.setVisible(true);
+        System.out.println("Editando curso ");
+        boolean succesful = true;
+        Asignacion aux = null;
+
+        if (this.jTable1.getModel().getRowCount() > 0) {
+            int index = this.jTable1.getSelectedRow();
+            String n_alumno = (String) model.getValueAt(index, 0);
+            String n_curso = (String) model.getValueAt(index, 1);
+            if (cursoalumno != null && !cursoalumno.isEmpty()) {
+                if (cursoalumno.containsKey(n_alumno+n_curso)) {
+                    try (Socket socket = new Socket("127.0.0.1", Server.PORT)) {
+                        ObjectOutputStream dos = new ObjectOutputStream(socket.getOutputStream());
+                        ObjectInputStream is = new ObjectInputStream(socket.getInputStream());
+
+                        dos.writeInt(Server.ASIGNACION);
+                        dos.writeInt(Server.FIND);
+                        CursoAlumno ca = cursoalumno.get(n_alumno+n_curso);
+                        
+                        dos.writeInt(ca.getAlumnoID());
+                        dos.writeInt(ca.getCursoID());
+                        dos.flush();
+                        aux = (Asignacion) is.readObject();
+                        is.close();
+                        dos.close();
+
+                    } catch (IOException ex) {
+                        System.out.println(ex.getMessage());
+                        System.out.println(ex.getClass());
+                        System.out.println(ex.getCause());
+                        succesful = false;
+                    } catch (ClassNotFoundException ex) {
+                        System.out.println(ex.getMessage());
+                        System.out.println(ex.getClass());
+                        System.out.println(ex.getCause());
+                    } finally {
+                        if (succesful && aux != null) {
+                            rform = new Relationform(2);
+                            System.out.println("crear asignacion");
+//                            rform.setCurso(aux);
+                            rform.setVisible(true);
+                        }
+                    }
+                }
+            }
+
+        }
     }//GEN-LAST:event_AsignacionEditarMenuActionPerformed
 
     
@@ -555,10 +597,12 @@ public class main extends javax.swing.JFrame {
             }
         });
     }
-    Relationform rform;
-    Applicationform appform;
-    Cursoform cform;
-    DefaultTableModel model ;
+    
+    private HashMap<String,CursoAlumno> cursoalumno;
+    private Relationform rform;
+    private Applicationform appform;
+    private Cursoform cform;
+    private DefaultTableModel model ;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem AlumnoEditarMenu;
     private javax.swing.JMenuItem AsignacionEditarMenu;
@@ -567,7 +611,6 @@ public class main extends javax.swing.JFrame {
     private javax.swing.JMenuItem alumnoCrearMenu;
     private javax.swing.JMenuItem asigancionCrearMenu;
     private javax.swing.JMenuItem asignacionListar;
-    private javax.swing.JMenuItem borrarMenu;
     private javax.swing.JMenuItem copyMenuItem;
     private javax.swing.JMenu crearMenu;
     private javax.swing.JMenuItem cursoCrearMenu;

@@ -16,6 +16,6 @@ public interface AsignacionFacade {
     public void create(Asignacion a);
     public void update(Asignacion a);
     public void remove(Asignacion a);
-    public Asignacion find(int id);
+    public Asignacion find(int id , int id_c);
     public List<Asignacion> findAll();
 }

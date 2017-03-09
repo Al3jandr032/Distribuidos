@@ -2,6 +2,8 @@ package com.ipn.client;
 
 
 import com.ipn.server.Server;
+import com.ipn.vo.Asignacion;
+import com.ipn.vo.AsignacionPK;
 import com.ipn.vo.Curso;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -9,6 +11,7 @@ import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.net.Socket;
 import java.sql.Date;
+import javax.swing.DefaultListModel;
 
 /**
  *
@@ -27,10 +30,22 @@ public class Relationform extends javax.swing.JFrame {
         
     }
 
-   
+    public Asignacion getAsignacion() {
+        AsignacionPK aux = new AsignacionPK(Integer.parseInt(this.jTextFieldAlumno.getText()),
+        Integer.parseInt(this.jTextFieldCurso.getText()));
+        asignacion = new Asignacion(aux, this.jTextFieldHorario.getText(), 
+                Integer.parseInt(this.jTextFieldTipo.getText()));
+        return asignacion;
+    }
 
-   
-
+    public void setAsignacion(Asignacion asignacion) {
+        this.asignacion = asignacion;
+        this.jTextFieldAlumno.setText(String.valueOf(asignacion.getAsignacionPK().getIdAlumno()));
+        this.jTextFieldCurso.setText(String.valueOf(asignacion.getAsignacionPK().getIdAlumno()));
+        this.jTextFieldHorario.setText(asignacion.getHorario());
+        this.jTextFieldTipo.setText(String.valueOf(asignacion.getTipoCurso()));
+    }
+    
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -46,14 +61,12 @@ public class Relationform extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        inicioTextField = new javax.swing.JTextField();
+        jTextFieldHorario = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
-        finTextField = new javax.swing.JTextField();
+        jTextFieldTipo = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jList2 = new javax.swing.JList<>();
+        jTextFieldAlumno = new javax.swing.JTextField();
+        jTextFieldCurso = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -74,45 +87,28 @@ public class Relationform extends javax.swing.JFrame {
 
         jLabel4.setText("Curso");
 
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane1.setViewportView(jList1);
-
-        jList2.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane2.setViewportView(jList2);
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(23, 23, 23)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(42, 42, 42)
-                        .addComponent(jLabel3))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(31, 31, 31)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(34, 34, 34)
+                    .addComponent(jTextFieldAlumno, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
+                .addGap(33, 33, 33)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                    .addComponent(jTextFieldCurso, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(37, 37, 37)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(inicioTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jLabel6)
+                    .addComponent(jTextFieldHorario, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(35, 35, 35)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel10)
-                    .addComponent(finTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                    .addComponent(jTextFieldTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel10))
+                .addContainerGap(51, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -120,17 +116,17 @@ public class Relationform extends javax.swing.JFrame {
                 .addGap(21, 21, 21)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
+                    .addComponent(jLabel4)
                     .addComponent(jLabel6)
-                    .addComponent(jLabel10)
-                    .addComponent(jLabel4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jLabel10))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jTextFieldAlumno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(inicioTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(finTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(66, Short.MAX_VALUE))
+                        .addComponent(jTextFieldCurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jTextFieldHorario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jTextFieldTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(128, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -147,7 +143,7 @@ public class Relationform extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
                             .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 27, Short.MAX_VALUE)))
+                        .addGap(0, 72, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -167,19 +163,19 @@ public class Relationform extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
      
-//        Curso aux = this.getCurso();
-//        
-//        if(this.mode == relationform.CREATE){
-//            this.operationCreate(aux);
-//        }else{
-//            aux.setIdCurso(id_curso);
-//            this.operationUpdate(aux);
-//        }
-//        this.dispose();
+        Asignacion aux = this.getAsignacion();
+        
+        if(this.mode == CREATE){
+            this.operationCreate(aux);
+        }else{
+            
+            this.operationUpdate(aux);
+        }
+        this.dispose();
         
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private boolean operationCreate(Curso a){
+    private boolean operationCreate(Asignacion a){
         boolean succesful = true;
             System.out.println("creando Alumno: ");
            
@@ -187,7 +183,7 @@ public class Relationform extends javax.swing.JFrame {
                 ObjectOutputStream dos = new ObjectOutputStream(socket.getOutputStream());
                 ObjectInputStream is = new ObjectInputStream(socket.getInputStream());
                 
-                dos.writeInt(Server.CURSO);
+                dos.writeInt(Server.ASIGNACION);
                 dos.writeInt(Server.CREATE);
                 dos.writeObject(a);
                 dos.flush();
@@ -203,7 +199,7 @@ public class Relationform extends javax.swing.JFrame {
         return succesful;
     }
     
-    private boolean operationUpdate(Curso a){
+    private boolean operationUpdate(Asignacion a){
         boolean succesful = true;
             System.out.println("creando Alumno: ");
             
@@ -211,7 +207,7 @@ public class Relationform extends javax.swing.JFrame {
                 ObjectOutputStream dos = new ObjectOutputStream(socket.getOutputStream());
                 ObjectInputStream is = new ObjectInputStream(socket.getInputStream());
                 
-                dos.writeInt(Server.CURSO);
+                dos.writeInt(Server.ASIGNACION);
                 dos.writeInt(Server.UPDATE);
                 dos.writeObject(a);
                 dos.flush();
@@ -230,21 +226,19 @@ public class Relationform extends javax.swing.JFrame {
     public static int CREATE = 1;
     public static int UPDATE = 2;
     private int mode;
-    private int id_curso;
-    private Curso curso;
+    private Asignacion asignacion;
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField finTextField;
-    private javax.swing.JTextField inicioTextField;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JList<String> jList1;
-    private javax.swing.JList<String> jList2;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTextField jTextFieldAlumno;
+    private javax.swing.JTextField jTextFieldCurso;
+    private javax.swing.JTextField jTextFieldHorario;
+    private javax.swing.JTextField jTextFieldTipo;
     // End of variables declaration//GEN-END:variables
 }
