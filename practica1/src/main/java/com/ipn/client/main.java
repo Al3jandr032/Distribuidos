@@ -356,6 +356,8 @@ public class main extends javax.swing.JFrame {
         }finally{
             if(model.getRowCount() > 0){
                 this.AlumnoEditarMenu.setEnabled(true);
+                this.AsignacionEditarMenu.setEnabled(false);
+                this.CursoEditarMenu.setEnabled(false);
             }
         }
     }//GEN-LAST:event_listarAlumnoActionPerformed
@@ -387,6 +389,9 @@ public class main extends javax.swing.JFrame {
         }finally{
             if(model.getRowCount() > 0){
                 this.CursoEditarMenu.setEnabled(true);
+                this.AlumnoEditarMenu.setEnabled(false);
+                this.AsignacionEditarMenu.setEnabled(false);
+                
             }
         }
     }//GEN-LAST:event_listarCursoActionPerformed
@@ -419,6 +424,8 @@ public class main extends javax.swing.JFrame {
         }finally{
             if(model.getRowCount() > 0){
                 this.AsignacionEditarMenu.setEnabled(true);
+                this.AlumnoEditarMenu.setEnabled(false);
+                this.CursoEditarMenu.setEnabled(false);
             }
         }
     }//GEN-LAST:event_asignacionListarActionPerformed
@@ -552,7 +559,7 @@ public class main extends javax.swing.JFrame {
                         if (succesful && aux != null) {
                             rform = new Relationform(2);
                             System.out.println("crear asignacion");
-//                            rform.setCurso(aux);
+                            rform.setAsignacion(aux);
                             rform.setVisible(true);
                         }
                     }

@@ -2,6 +2,7 @@ package com.ipn.client;
 
 
 import com.ipn.server.Server;
+import com.ipn.vo.Alumno;
 import com.ipn.vo.Asignacion;
 import com.ipn.vo.AsignacionPK;
 import com.ipn.vo.Curso;
@@ -11,7 +12,9 @@ import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.net.Socket;
 import java.sql.Date;
+import java.util.HashMap;
 import javax.swing.DefaultListModel;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -27,6 +30,14 @@ public class Relationform extends javax.swing.JFrame {
         this.mode = mode;
         
         initComponents();
+        this.alumnoComboBox.removeAllItems();
+        this.cursoComboBox.removeAllItems();
+        if(this.mode == Relationform.CREATE){
+            this.alumnoComboBox.setEnabled(true);
+            this.cursoComboBox.setEnabled(true);
+            this.loadAlumnos();
+            this.loadCursos();
+        }
         
     }
 
@@ -67,6 +78,8 @@ public class Relationform extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jTextFieldAlumno = new javax.swing.JTextField();
         jTextFieldCurso = new javax.swing.JTextField();
+        alumnoComboBox = new javax.swing.JComboBox<>();
+        cursoComboBox = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -87,19 +100,41 @@ public class Relationform extends javax.swing.JFrame {
 
         jLabel4.setText("Curso");
 
+        jTextFieldAlumno.setEnabled(false);
+
+        jTextFieldCurso.setEnabled(false);
+
+        alumnoComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        alumnoComboBox.setEnabled(false);
+        alumnoComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                alumnoComboBoxActionPerformed(evt);
+            }
+        });
+
+        cursoComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cursoComboBox.setEnabled(false);
+        cursoComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cursoComboBoxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(23, 23, 23)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextFieldAlumno, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(alumnoComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jTextFieldAlumno, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
                     .addComponent(jLabel3))
                 .addGap(33, 33, 33)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel4)
-                    .addComponent(jTextFieldCurso, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldCurso, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
+                    .addComponent(cursoComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(37, 37, 37)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel6)
@@ -126,7 +161,11 @@ public class Relationform extends javax.swing.JFrame {
                         .addComponent(jTextFieldCurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jTextFieldHorario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jTextFieldTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(128, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(alumnoComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cursoComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(83, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -174,6 +213,28 @@ public class Relationform extends javax.swing.JFrame {
         this.dispose();
         
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void alumnoComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_alumnoComboBoxActionPerformed
+        // TODO add your handling code here:}
+        if (this.alumnoComboBox.getItemCount() > 0) {
+            String aux = (String) this.alumnoComboBox.getSelectedItem();
+            System.out.println("Elemento seleccionado " + aux);
+            if (this.alumno_id.containsKey(aux)) {
+                this.jTextFieldAlumno.setText(String.valueOf(this.alumno_id.get(aux)));
+            }
+        }
+    }//GEN-LAST:event_alumnoComboBoxActionPerformed
+
+    private void cursoComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cursoComboBoxActionPerformed
+        // TODO add your handling code here:
+        if (this.cursoComboBox.getItemCount() > 0) {
+            String aux = (String) this.cursoComboBox.getSelectedItem();
+            System.out.println("Elemento seleccionado " + aux);
+            if (this.curso_id.containsKey(aux)) {
+                this.jTextFieldCurso.setText(String.valueOf(this.curso_id.get(aux)));
+            }
+        }
+    }//GEN-LAST:event_cursoComboBoxActionPerformed
 
     private boolean operationCreate(Asignacion a){
         boolean succesful = true;
@@ -223,12 +284,72 @@ public class Relationform extends javax.swing.JFrame {
         return succesful;
     }
     
+    private void loadAlumnos(){
+        this.alumno_id = new HashMap<>();
+        try (Socket socket = new Socket("127.0.0.1", Server.PORT)) {
+            ObjectOutputStream dos = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream is = new ObjectInputStream(socket.getInputStream());
+
+            dos.writeInt(Server.ALUMNO);
+            dos.writeInt(Server.FIND_ALL);
+            dos.flush();
+            int index = is.readInt();
+//            ArrayList<Object> lst = new ArrayList();
+            
+            for (int i = 0; i < index; i++) {
+                Alumno o = (Alumno) is.readObject();
+                this.alumno_id.put(o.getNombre(), o.getIdAlumno());
+                this.alumnoComboBox.addItem(o.getNombre());
+            }
+            dos.close();
+        } catch (IOException | ClassNotFoundException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println(ex.getClass());
+            System.out.println(ex.getCause());
+        }finally{
+            this.alumnoComboBox.setSelectedIndex(0);
+        }
+    }
+    
+    private void loadCursos(){
+        this.curso_id = new HashMap();
+         try (Socket socket = new Socket("127.0.0.1", Server.PORT)) {
+            ObjectOutputStream dos = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream is = new ObjectInputStream(socket.getInputStream());
+
+            
+            dos.writeInt(Server.CURSO);
+            dos.writeInt(Server.FIND_ALL);
+            dos.flush();
+            int index = is.readInt();
+//            ArrayList<Object> lst = new ArrayList();
+   
+            for (int i = 0; i < index; i++) {
+                Curso o = (Curso) is.readObject();
+                this.curso_id.put(o.getNombre(), o.getIdCurso());
+                this.cursoComboBox.addItem(o.getNombre());
+            }
+
+            dos.close();
+        } catch (IOException | ClassNotFoundException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println(ex.getClass());
+            System.out.println(ex.getCause());
+        }finally{
+            this.cursoComboBox.setSelectedIndex(0);
+        }
+    }
+    
+    
     public static int CREATE = 1;
     public static int UPDATE = 2;
     private int mode;
     private Asignacion asignacion;
-
+    private HashMap<String , Integer> alumno_id ;
+    private HashMap<String , Integer> curso_id ;
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> alumnoComboBox;
+    private javax.swing.JComboBox<String> cursoComboBox;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;

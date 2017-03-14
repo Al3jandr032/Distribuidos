@@ -3,12 +3,18 @@ package com.ipn.client;
 
 import com.ipn.server.Server;
 import com.ipn.vo.Curso;
+import com.toedter.calendar.JCalendar;
+import com.toedter.calendar.JDateChooser;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.net.Socket;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -22,7 +28,7 @@ public class Cursoform extends javax.swing.JFrame {
      */
     public Cursoform(int mode) {
         this.mode = mode;
-        
+
         initComponents();
         
     }
@@ -86,6 +92,12 @@ public class Cursoform extends javax.swing.JFrame {
         jLabel2.setText("Couta");
 
         jLabel6.setText("Fecha Inicio");
+
+        inicioTextField.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                inicioTextFieldMouseClicked(evt);
+            }
+        });
 
         jLabel10.setText("Fecha fin");
 
@@ -165,16 +177,43 @@ public class Cursoform extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
      
         Curso aux = this.getCurso();
-        
-        if(this.mode == Cursoform.CREATE){
+        if(this.validateDate(this.inicioTextField.getText()) && 
+                this.validateDate(this.finTextField.getText())){
+                 if(this.mode == Cursoform.CREATE){
             this.operationCreate(aux);
         }else{
             aux.setIdCurso(id_curso);
             this.operationUpdate(aux);
         }
         this.dispose();
+        }else{
+            JOptionPane.showMessageDialog(null, "formato de fecha AAAA-MM-DD", "formato de fecha invalido",0);
+        }
+            
+       
         
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private boolean validateDate(String input) {
+        boolean checkFormat;
+
+        if (input.matches("(20[0-9]{2})-(0[0-9]{1}|1([0-2]))-([0-2]{1}[0-9]{1}|30|31)")) {
+            checkFormat = true;
+        } else {
+            checkFormat = false;
+        }
+        return checkFormat;
+    }
+    
+    private void inicioTextFieldMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_inicioTextFieldMouseClicked
+        // TODO add your handling code here:
+        JFrame date = new JFrame("Booking");
+        JCalendar calendario = new JCalendar();
+        date.getContentPane().add(calendario);
+        date.pack();
+        date.setVisible(true);
+        
+    }//GEN-LAST:event_inicioTextFieldMouseClicked
 
     private boolean operationCreate(Curso a){
         boolean succesful = true;
@@ -229,6 +268,7 @@ public class Cursoform extends javax.swing.JFrame {
     private int mode;
     private int id_curso;
     private Curso curso;
+    private JDateChooser chooser;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField cuotaTextField;
     private javax.swing.JTextField finTextField;
